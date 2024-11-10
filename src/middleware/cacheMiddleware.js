@@ -36,5 +36,5 @@ const cacheInvalidationMiddleware =
 
 module.exports = {
   cacheMiddleware,
-  cacheInvalidationMiddleware,
+  cacheInvalidationMiddleware
 };

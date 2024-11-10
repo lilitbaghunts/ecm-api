@@ -41,7 +41,7 @@ async function generateOrders(count) {
         orderItems.push({
           productId,
           quantity,
-          unitPrice,
+          unitPrice
         });
 
         totalAmount += unitPrice * quantity;
@@ -52,7 +52,7 @@ async function generateOrders(count) {
       userId: userIds[Math.floor(Math.random() * userIds.length)],
       totalAmount,
       items: orderItems,
-      status: 'pending',
+      status: 'pending'
     };
     orders.push(order);
   }

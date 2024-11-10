@@ -27,7 +27,7 @@ async function generateProducts(count) {
       stock: faker.helpers.rangeToNumber({ min: 0, max: 100 }),
       imageUrl: faker.image.url(),
       category: faker.commerce.department(),
-      userId: userIds[Math.floor(Math.random() * userIds.length)],
+      userId: userIds[Math.floor(Math.random() * userIds.length)]
     };
     products.push(product);
   }

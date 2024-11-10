@@ -16,7 +16,7 @@ function generateUsers(count) {
       name: faker.person.fullName(),
       email: faker.internet.email(),
       passwordHash: faker.internet.password(),
-      role: roles[Math.floor(Math.random() * roles.length)],
+      role: roles[Math.floor(Math.random() * roles.length)]
     };
     users.push(user);
   }

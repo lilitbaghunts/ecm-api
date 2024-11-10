@@ -1,7 +1,7 @@
 const Product = require('../models/Product');
 const redisClient = require('../config/redis');
 
-const getAllProducts = async (req, res) => {
+const getAllProducts = async (req, res, next) => {
   try {
     const products = await Product.find();
 
@@ -10,35 +10,38 @@ const getAllProducts = async (req, res) => {
 
     res.status(200).json(products);
   } catch (error) {
-    res.status(400).json({ error: 'Error fetching products', error });
+    console.error(error);
+    next(error);
   }
 };
 
-const createProduct = async (req, res) => {
+const createProduct = async (req, res, next) => {
   try {
     const product = new Product(req.body);
     await product.save();
 
     res.status(201).json(product);
   } catch (error) {
-    res.status(400).json({ error: 'Error creating products', error });
+    console.error(error);
+    next(error);
   }
 };
 
-const getProductById = async (req, res) => {
+const getProductById = async (req, res, next) => {
   try {
     const product = await Product.findById(req.params.id);
     if (!product) return res.status(404).json({ message: 'Product not found' });
     res.status(200).json(product);
   } catch (error) {
-    res.status(400).json({ error: 'Error fetching product', error });
+    console.error(error);
+    next(error);
   }
 };
 
-const updateProduct = async (req, res) => {
+const updateProduct = async (req, res, next) => {
   try {
     const product = await Product.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
+      new: true
     });
     if (!product) return res.status(404).json({ message: 'Product not found' });
 
@@ -47,11 +50,12 @@ const updateProduct = async (req, res) => {
 
     res.status(201).json(product);
   } catch (error) {
-    res.status(400).json({ error: 'Error updating products', error });
+    console.error(error);
+    next(error);
   }
 };
 
-const deleteProduct = async (req, res) => {
+const deleteProduct = async (req, res, next) => {
   try {
     const product = await Product.findByIdAndDelete(req.params.id);
     if (!product) return res.status(404).json({ message: 'Product not found' });
@@ -61,7 +65,8 @@ const deleteProduct = async (req, res) => {
 
     res.status(204).send();
   } catch (error) {
-    res.status(400).json({ error: 'Error deleting product', error });
+    console.error(error);
+    next(error);
   }
 };
 
@@ -70,5 +75,5 @@ module.exports = {
   createProduct,
   getProductById,
   updateProduct,
-  deleteProduct,
+  deleteProduct
 };
