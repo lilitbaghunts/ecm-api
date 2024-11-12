@@ -1,41 +1,49 @@
 const redisClient = require('../config/redis');
 
-const cacheMiddleware = (key) => async (req, res, next) => {
-  try {
-    if (Object.keys(req.query).length > 0) {
-      return next();
+const cacheMiddleware = (type) => async (req, res, next) => {
+  const { page = 1, limit = 10, ...filters } = req.query;
+
+  const cacheKeyParts = [`${type}:page:${page}`, `limit:${limit}`];
+
+  Object.entries(filters).forEach(([key, value]) => {
+    if (value) {
+      cacheKeyParts.push(`${key}:${value}`);
     }
-    const cachedData = await redisClient.get(key);
+  });
+
+  const cacheKey = cacheKeyParts.join(':');
+  try {
+    const cachedData = await redisClient.get(cacheKey);
 
     if (cachedData) {
-      console.log(`Cache hit for key: ${key}`);
+      console.log(`Cache hit for key: ${cacheKey}`);
       return res.status(200).json(JSON.parse(cachedData));
     }
 
-    console.log(`Cache miss for key: ${key}`);
-    req.cacheKey = key;
+    console.log(`Cache miss for key: ${cacheKey}`);
+    req.cacheKey = cacheKey;
     next();
   } catch (error) {
-    console.error('Redis cache middleware error:', error);
+    console.error('Error fetching cache:', error);
     next();
   }
 };
 
-const cacheInvalidationMiddleware =
-  (keysToInvalidate) => async (req, res, next) => {
-    res.on('finish', async () => {
-      try {
-        for (const key of keysToInvalidate) {
-          await redisClient.del(key);
-          console.log(`Cache invalidated for key: ${key}`);
-        }
-      } catch (error) {
-        console.error('Failed to invalidate cache:', error);
+const cacheInvalidationMiddleware = (keys) => async (req, res, next) => {
+  res.on('finish', async () => {
+    try {
+      const keysToInvalidate = await redisClient.keys(keys);
+      console.log('keysToInvalidate', keysToInvalidate);
+      for (const key of keysToInvalidate) {
+        await redisClient.del(key);
+        console.log(`Cache invalidated for key: ${key}`);
       }
-    });
-
-    next();
-  };
+    } catch (error) {
+      console.error('Failed to invalidate cache:', error);
+    }
+  });
+  next();
+};
 
 module.exports = {
   cacheMiddleware,

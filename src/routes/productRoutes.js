@@ -14,24 +14,24 @@ const {
 
 const router = express.Router();
 
-router.get('/', cacheMiddleware('products:all'), getAllProducts);
+router.get('/', cacheMiddleware('products'), getAllProducts);
 router.post(
   '/',
   auth,
-  cacheInvalidationMiddleware(['products:all']),
+  cacheInvalidationMiddleware(['products:*']),
   createProduct
 );
 router.get('/:id', getProductById);
 router.put(
   '/:id',
   auth,
-  cacheInvalidationMiddleware(['products:all']),
+  cacheInvalidationMiddleware('products:*'),
   updateProduct
 );
 router.delete(
   '/:id',
   auth,
-  cacheInvalidationMiddleware(['products:all']),
+  cacheInvalidationMiddleware(['products:*']),
   deleteProduct
 );
 

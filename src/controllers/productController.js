@@ -1,10 +1,9 @@
 const Product = require('../models/Product');
 const redisClient = require('../config/redis');
-const cacheKey = 'products:all';
 
 const getAllProducts = async (req, res, next) => {
   try {
-    const { category, minPrice, maxPrice } = req.query;
+    const { page = 1, limit = 50, category, minPrice, maxPrice } = req.query;
 
     const filter = {};
     if (category) {
@@ -16,13 +15,18 @@ const getAllProducts = async (req, res, next) => {
       if (maxPrice) filter.price.$lte = parseFloat(maxPrice);
     }
 
-    const products = await Product.find(filter);
+    const skip = (page - 1) * limit;
+    const products = await Product.find(filter).skip(skip).limit(Number(limit));
+    const totalCount = await Product.countDocuments(filter);
 
-    if (req.cacheKey) {
-      await redisClient.setEx(req.cacheKey, 3600, JSON.stringify(products));
-    }
+    redisClient.setEx(req.cacheKey, 3600, JSON.stringify(products));
 
-    res.status(200).json(products);
+    res.status(200).json({
+      products,
+      totalPages: Math.ceil(totalCount / limit),
+      currentPage: Number(page),
+      totalProducts: totalCount
+    });
   } catch (error) {
     console.error(error);
     next(error);
@@ -33,7 +37,6 @@ const createProduct = async (req, res, next) => {
   try {
     const product = new Product(req.body);
     await product.save();
-
     res.status(201).json(product);
   } catch (error) {
     console.error(error);
@@ -59,9 +62,6 @@ const updateProduct = async (req, res, next) => {
     });
     if (!product) return res.status(404).json({ message: 'Product not found' });
 
-    // Invalidate cached products
-    await redisClient.del(cacheKey);
-
     res.status(201).json(product);
   } catch (error) {
     console.error(error);
@@ -73,9 +73,6 @@ const deleteProduct = async (req, res, next) => {
   try {
     const product = await Product.findByIdAndDelete(req.params.id);
     if (!product) return res.status(404).json({ message: 'Product not found' });
-
-    // Invalidate cached products
-    await redisClient.del(cacheKey);
 
     res.status(204).send();
   } catch (error) {
