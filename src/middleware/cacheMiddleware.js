@@ -2,6 +2,9 @@ const redisClient = require('../config/redis');
 
 const cacheMiddleware = (key) => async (req, res, next) => {
   try {
+    if (Object.keys(req.query).length > 0) {
+      return next();
+    }
     const cachedData = await redisClient.get(key);
 
     if (cachedData) {

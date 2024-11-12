@@ -4,12 +4,12 @@ const {
   createProduct,
   getProductById,
   updateProduct,
-  deleteProduct,
+  deleteProduct
 } = require('../controllers/productController');
 const auth = require('../middleware/authMiddleware');
 const {
   cacheMiddleware,
-  cacheInvalidationMiddleware,
+  cacheInvalidationMiddleware
 } = require('../middleware/cacheMiddleware');
 
 const router = express.Router();

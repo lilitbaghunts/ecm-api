@@ -1,12 +1,26 @@
 const Product = require('../models/Product');
 const redisClient = require('../config/redis');
+const cacheKey = 'products:all';
 
 const getAllProducts = async (req, res, next) => {
   try {
-    const products = await Product.find();
+    const { category, minPrice, maxPrice } = req.query;
 
-    // Cache the products
-    await redisClient.setEx(req.cacheKey, 3600, JSON.stringify(products));
+    const filter = {};
+    if (category) {
+      filter.category = category;
+    }
+    if (minPrice || maxPrice) {
+      filter.price = {};
+      if (minPrice) filter.price.$gte = parseFloat(minPrice);
+      if (maxPrice) filter.price.$lte = parseFloat(maxPrice);
+    }
+
+    const products = await Product.find(filter);
+
+    if (req.cacheKey) {
+      await redisClient.setEx(req.cacheKey, 3600, JSON.stringify(products));
+    }
 
     res.status(200).json(products);
   } catch (error) {
@@ -46,7 +60,7 @@ const updateProduct = async (req, res, next) => {
     if (!product) return res.status(404).json({ message: 'Product not found' });
 
     // Invalidate cached products
-    await redisClient.del('products:all');
+    await redisClient.del(cacheKey);
 
     res.status(201).json(product);
   } catch (error) {
@@ -61,7 +75,7 @@ const deleteProduct = async (req, res, next) => {
     if (!product) return res.status(404).json({ message: 'Product not found' });
 
     // Invalidate cached products
-    await redisClient.del('products:all');
+    await redisClient.del(cacheKey);
 
     res.status(204).send();
   } catch (error) {

@@ -19,8 +19,8 @@ describe('Auth Endpoints', () => {
 
   afterAll(async () => {
     await mongoose.connection.close();
-    server.close();
     await redisClient.quit();
+    server.close();
   });
 
   describe('POST /api/auth/register', () => {
