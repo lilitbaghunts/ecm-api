@@ -16,17 +16,21 @@ const getAllProducts = async (req, res, next) => {
     }
 
     const skip = (page - 1) * limit;
-    const products = await Product.find(filter).skip(skip).limit(Number(limit));
-    const totalCount = await Product.countDocuments(filter);
+    const [products, totalCount] = await Promise.all([
+      Product.find(filter).skip(skip).limit(limit),
+      Product.countDocuments(filter)
+    ]);
 
-    redisClient.setEx(req.cacheKey, 3600, JSON.stringify(products));
-
-    res.status(200).json({
+    const productData = {
       products,
       totalPages: Math.ceil(totalCount / limit),
       currentPage: Number(page),
       totalProducts: totalCount
-    });
+    };
+
+    redisClient.setEx(req.cacheKey, 3600, JSON.stringify(productData));
+
+    res.status(200).json(productData);
   } catch (error) {
     console.error(error);
     next(error);
@@ -35,6 +39,13 @@ const getAllProducts = async (req, res, next) => {
 
 const createProduct = async (req, res, next) => {
   try {
+    const { name, price } = req.body;
+    if (!name) {
+      return res.status(400).json({ message: 'Product name is required.' });
+    }
+    if (!price) {
+      return res.status(400).json({ message: 'Product price is required.' });
+    }
     const product = new Product(req.body);
     await product.save();
     res.status(201).json(product);
@@ -74,7 +85,7 @@ const deleteProduct = async (req, res, next) => {
     const product = await Product.findByIdAndDelete(req.params.id);
     if (!product) return res.status(404).json({ message: 'Product not found' });
 
-    res.status(204).send();
+    res.status(200).json({ message: 'Product deleted' });
   } catch (error) {
     console.error(error);
     next(error);

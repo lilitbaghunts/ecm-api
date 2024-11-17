@@ -1,7 +1,7 @@
 const redisClient = require('../config/redis');
 
 const cacheMiddleware = (type) => async (req, res, next) => {
-  const { page = 1, limit = 10, ...filters } = req.query;
+  const { page = 1, limit = 50, ...filters } = req.query;
 
   const cacheKeyParts = [`${type}:page:${page}`, `limit:${limit}`];
 
@@ -11,7 +11,7 @@ const cacheMiddleware = (type) => async (req, res, next) => {
     }
   });
 
-  const cacheKey = cacheKeyParts.join(':');
+  const cacheKey = cacheKeyParts.join('|');
   try {
     const cachedData = await redisClient.get(cacheKey);
 
@@ -33,7 +33,6 @@ const cacheInvalidationMiddleware = (keys) => async (req, res, next) => {
   res.on('finish', async () => {
     try {
       const keysToInvalidate = await redisClient.keys(keys);
-      console.log('keysToInvalidate', keysToInvalidate);
       for (const key of keysToInvalidate) {
         await redisClient.del(key);
         console.log(`Cache invalidated for key: ${key}`);

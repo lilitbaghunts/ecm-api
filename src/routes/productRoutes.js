@@ -18,7 +18,7 @@ router.get('/', cacheMiddleware('products'), getAllProducts);
 router.post(
   '/',
   auth,
-  cacheInvalidationMiddleware(['products:*']),
+  cacheInvalidationMiddleware('products:*'),
   createProduct
 );
 router.get('/:id', getProductById);
@@ -31,7 +31,7 @@ router.put(
 router.delete(
   '/:id',
   auth,
-  cacheInvalidationMiddleware(['products:*']),
+  cacheInvalidationMiddleware('products:*'),
   deleteProduct
 );
 

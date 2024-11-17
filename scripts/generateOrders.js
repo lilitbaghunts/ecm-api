@@ -1,14 +1,9 @@
-const mongoose = require('mongoose');
 const { faker } = require('@faker-js/faker');
 const Order = require('../src/models/Order');
 const Product = require('../src/models/Product');
 const User = require('../src/models/User');
-const connectDB = require('../src/config/db');
-const MONGO_URI = 'mongodb://localhost:27017/emc';
 
-connectDB(MONGO_URI);
-
-async function generateOrders(count) {
+const generateOrders = async (count) => {
   // Fetch all user IDs
 
   const userIds = await User.distinct('_id');
@@ -58,10 +53,10 @@ async function generateOrders(count) {
   }
 
   return orders;
-}
+};
 
 // Insert generated orders into MongoDB
-async function insertOrders() {
+const insertOrders = async () => {
   try {
     const orders = await generateOrders(100);
     const insertedOrders = await Order.insertMany(orders);
@@ -70,10 +65,7 @@ async function insertOrders() {
     );
   } catch (error) {
     console.error('Error inserting orders:', error);
-  } finally {
-    mongoose.connection.close();
   }
-}
+};
 
-// Run the insertion function
-insertOrders();
+module.exports = insertOrders;
