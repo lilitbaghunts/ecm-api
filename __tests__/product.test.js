@@ -138,35 +138,85 @@ describe('Product Endpoints', () => {
       expect(response.status).toBe(401);
       expect(response.body.message).toBe('Access denied');
     });
+  });
 
-    describe('DELETE /api/products/:id', () => {
-      it('should delete a product', async () => {
-        const response = await request(app)
-          .delete(`/api/products/${productId}`)
-          .set('Authorization', `Bearer ${token}`);
+  describe('PUT /api/products/:id', () => {
+    it('should update a product', async () => {
+      const updatedProductData = {
+        name: 'Updated Test Product',
+        description: 'Updated description',
+        price: 25,
+        stock: 20,
+        imageUrl: 'http://example.com/updated-product.jpg',
+        category: 'Home Appliances'
+      };
 
-        expect(response.status).toBe(200);
-        expect(response.body.message).toBe('Product deleted');
-      });
+      const response = await request(app)
+        .put(`/api/products/${productId}`)
+        .set('Authorization', `Bearer ${token}`)
+        .send(updatedProductData);
 
-      it('should return 404 if product not found', async () => {
-        const nonExistentProductId = '605c72ef15320757a85b1e89';
-        const response = await request(app)
-          .delete(`/api/products/${nonExistentProductId}`)
-          .set('Authorization', `Bearer ${token}`);
+      expect(response.status).toBe(200);
+      expect(response.body.name).toBe(updatedProductData.name);
+      expect(response.body.description).toBe(updatedProductData.description);
+      expect(response.body.price).toBe(updatedProductData.price);
+      expect(response.body.stock).toBe(updatedProductData.stock);
+      expect(response.body.imageUrl).toBe(updatedProductData.imageUrl);
+      expect(response.body.category).toBe(updatedProductData.category);
+    });
 
-        expect(response.status).toBe(404);
-        expect(response.body.message).toBe('Product not found');
-      });
+    it('should return 404 if product not found', async () => {
+      const nonExistentProductId = '605c72ef15320757a85b1e89';
+      const response = await request(app)
+        .put(`/api/products/${nonExistentProductId}`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          name: 'Test Product 4',
+          price: '100'
+        });
 
-      it('should return 401 if no token is provided', async () => {
-        const response = await request(app)
-          .delete(`/api/products/${productId}`)
-          .send();
+      expect(response.status).toBe(404);
+      expect(response.body.message).toBe('Product not found');
+    });
 
-        expect(response.status).toBe(401);
-        expect(response.body.message).toBe('Access denied');
-      });
+    it('should return 401 if no token is provided', async () => {
+      const productData = { name: 'Unauthorized Product', price: 20 };
+      const response = await request(app)
+        .put(`/api/products/${productId}`)
+        .send(productData);
+
+      expect(response.status).toBe(401);
+      expect(response.body.message).toBe('Access denied');
+    });
+  });
+
+  describe('DELETE /api/products/:id', () => {
+    it('should delete a product', async () => {
+      const response = await request(app)
+        .delete(`/api/products/${productId}`)
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(response.status).toBe(200);
+      expect(response.body.message).toBe('Product deleted');
+    });
+
+    it('should return 404 if product not found', async () => {
+      const nonExistentProductId = '605c72ef15320757a85b1e89';
+      const response = await request(app)
+        .delete(`/api/products/${nonExistentProductId}`)
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(response.status).toBe(404);
+      expect(response.body.message).toBe('Product not found');
+    });
+
+    it('should return 401 if no token is provided', async () => {
+      const response = await request(app)
+        .delete(`/api/products/${productId}`)
+        .send();
+
+      expect(response.status).toBe(401);
+      expect(response.body.message).toBe('Access denied');
     });
   });
 });

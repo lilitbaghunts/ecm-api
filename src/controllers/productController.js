@@ -68,12 +68,15 @@ const getProductById = async (req, res, next) => {
 
 const updateProduct = async (req, res, next) => {
   try {
-    const product = await Product.findByIdAndUpdate(req.params.id, req.body, {
+    const { id } = req.params;
+    const updateData = req.body;
+
+    const product = await Product.findByIdAndUpdate(id, updateData, {
       new: true
     });
     if (!product) return res.status(404).json({ message: 'Product not found' });
 
-    res.status(201).json(product);
+    res.status(200).json(product);
   } catch (error) {
     console.error(error);
     next(error);
