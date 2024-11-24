@@ -31,7 +31,8 @@ const products = [
   }
 ];
 
-let token;
+let userToken;
+let adminToken;
 let productId;
 
 describe('Product Endpoints', () => {
@@ -42,9 +43,21 @@ describe('Product Endpoints', () => {
       passwordHash: 'password123'
     });
 
-    token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: '1h'
-    });
+    userToken = jwt.sign(
+      { userId: user._id, role: 'customer' },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: '1h'
+      }
+    );
+
+    adminToken = jwt.sign(
+      { userId: user._id, role: 'admin' },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: '1h'
+      }
+    );
 
     await Product.insertMany(products);
   });
@@ -92,7 +105,7 @@ describe('Product Endpoints', () => {
       };
       const response = await request(app)
         .post('/api/products')
-        .set('Authorization', `Bearer ${token}`)
+        .set('Authorization', `Bearer ${adminToken}`)
         .send(productData);
 
       expect(response.status).toBe(201);
@@ -108,7 +121,7 @@ describe('Product Endpoints', () => {
       };
       const response = await request(app)
         .post('/api/products')
-        .set('Authorization', `Bearer ${token}`)
+        .set('Authorization', `Bearer ${adminToken}`)
         .send(productData);
 
       expect(response.status).toBe(400);
@@ -122,7 +135,7 @@ describe('Product Endpoints', () => {
       };
       const response = await request(app)
         .post('/api/products')
-        .set('Authorization', `Bearer ${token}`)
+        .set('Authorization', `Bearer ${adminToken}`)
         .send(productData);
 
       expect(response.status).toBe(400);
@@ -137,6 +150,20 @@ describe('Product Endpoints', () => {
 
       expect(response.status).toBe(401);
       expect(response.body.message).toBe('Access denied');
+    });
+
+    it('should reject a non-admin user from creating a product', async () => {
+      const productData = {
+        name: 'Test Product',
+        stock: 10
+      };
+      const response = await request(app)
+        .post('/api/products')
+        .set('Authorization', `Bearer ${userToken}`)
+        .send(productData);
+
+      expect(response.status).toBe(403);
+      expect(response.body.message).toBe('Access denied, admin only');
     });
   });
 
@@ -153,7 +180,7 @@ describe('Product Endpoints', () => {
 
       const response = await request(app)
         .put(`/api/products/${productId}`)
-        .set('Authorization', `Bearer ${token}`)
+        .set('Authorization', `Bearer ${adminToken}`)
         .send(updatedProductData);
 
       expect(response.status).toBe(200);
@@ -169,7 +196,7 @@ describe('Product Endpoints', () => {
       const nonExistentProductId = '605c72ef15320757a85b1e89';
       const response = await request(app)
         .put(`/api/products/${nonExistentProductId}`)
-        .set('Authorization', `Bearer ${token}`)
+        .set('Authorization', `Bearer ${adminToken}`)
         .send({
           name: 'Test Product 4',
           price: '100'
@@ -188,13 +215,27 @@ describe('Product Endpoints', () => {
       expect(response.status).toBe(401);
       expect(response.body.message).toBe('Access denied');
     });
+
+    it('should reject a non-admin user from updating a product', async () => {
+      const productData = {
+        name: 'Updated Test Product',
+        stock: 10
+      };
+      const response = await request(app)
+        .put(`/api/products/${productId}`)
+        .set('Authorization', `Bearer ${userToken}`)
+        .send(productData);
+
+      expect(response.status).toBe(403);
+      expect(response.body.message).toBe('Access denied, admin only');
+    });
   });
 
   describe('DELETE /api/products/:id', () => {
     it('should delete a product', async () => {
       const response = await request(app)
         .delete(`/api/products/${productId}`)
-        .set('Authorization', `Bearer ${token}`);
+        .set('Authorization', `Bearer ${adminToken}`);
 
       expect(response.status).toBe(200);
       expect(response.body.message).toBe('Product deleted');
@@ -204,7 +245,7 @@ describe('Product Endpoints', () => {
       const nonExistentProductId = '605c72ef15320757a85b1e89';
       const response = await request(app)
         .delete(`/api/products/${nonExistentProductId}`)
-        .set('Authorization', `Bearer ${token}`);
+        .set('Authorization', `Bearer ${adminToken}`);
 
       expect(response.status).toBe(404);
       expect(response.body.message).toBe('Product not found');
@@ -217,6 +258,15 @@ describe('Product Endpoints', () => {
 
       expect(response.status).toBe(401);
       expect(response.body.message).toBe('Access denied');
+    });
+
+    it('should reject a non-admin user from deleting a product', async () => {
+      const response = await request(app)
+        .delete(`/api/products/${productId}`)
+        .set('Authorization', `Bearer ${userToken}`);
+
+      expect(response.status).toBe(403);
+      expect(response.body.message).toBe('Access denied, admin only');
     });
   });
 });

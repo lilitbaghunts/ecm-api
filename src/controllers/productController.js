@@ -3,9 +3,19 @@ const redisClient = require('../config/redis');
 
 const getAllProducts = async (req, res, next) => {
   try {
-    const { page = 1, limit = 50, category, minPrice, maxPrice } = req.query;
+    const {
+      page = 1,
+      limit = 50,
+      name,
+      category,
+      minPrice,
+      maxPrice
+    } = req.query;
 
     const filter = {};
+    if (name) {
+      filter.$text = { $search: name };
+    }
     if (category) {
       filter.category = category;
     }
@@ -17,7 +27,10 @@ const getAllProducts = async (req, res, next) => {
 
     const skip = (page - 1) * limit;
     const [products, totalCount] = await Promise.all([
-      Product.find(filter).skip(skip).limit(limit),
+      Product.find(filter)
+        .skip(skip)
+        .limit(limit)
+        .sort({ name: 1, category: 1, price: 1 }),
       Product.countDocuments(filter)
     ]);
 

@@ -9,7 +9,11 @@ const ProductSchema = new mongoose.Schema(
     imageUrl: { type: String },
     category: { type: String }
   },
-  { timeStamps: true }
+  { timestamps: true }
 );
+
+ProductSchema.index({ name: 1, category: 1, price: 1 });
+
+ProductSchema.index({ name: 'text' });
 
 module.exports = mongoose.model('Product', ProductSchema);

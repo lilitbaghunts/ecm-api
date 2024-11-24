@@ -11,6 +11,7 @@ const {
   cacheMiddleware,
   cacheInvalidationMiddleware
 } = require('../middleware/cacheMiddleware');
+const isAdmin = require('../middleware/adminMiddleware');
 
 const router = express.Router();
 
@@ -18,6 +19,7 @@ router.get('/', cacheMiddleware('products'), getAllProducts);
 router.post(
   '/',
   auth,
+  isAdmin,
   cacheInvalidationMiddleware('products:*'),
   createProduct
 );
@@ -25,12 +27,14 @@ router.get('/:id', getProductById);
 router.put(
   '/:id',
   auth,
+  isAdmin,
   cacheInvalidationMiddleware('products:*'),
   updateProduct
 );
 router.delete(
   '/:id',
   auth,
+  isAdmin,
   cacheInvalidationMiddleware('products:*'),
   deleteProduct
 );
