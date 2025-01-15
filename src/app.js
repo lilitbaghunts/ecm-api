@@ -6,7 +6,8 @@ const errorHandler = require('./middleware/errorHandler');
 const cors = require('cors');
 const apiLimiter = require('./middleware/rateLimiter');
 
-require('dotenv').config();
+const envFile = process.env.NODE_ENV === 'development' ? '.env.local' : '.env';
+require('dotenv').config({ path: envFile });
 
 const app = express();
 

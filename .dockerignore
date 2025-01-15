@@ -1,0 +1,32 @@
+# Node.js specific
+node_modules
+npm-debug.log
+
+# Logs
+logs
+*.log
+
+# Environment variables
+.env
+.env.test
+.env.local
+
+# Editor settings
+.history
+.vscode
+
+# Test files and coverage
+tests
+coverage
+__tests__
+
+# Docker-specific
+Dockerfile
+.dockerignore
+
+# System files
+.DS_Store
+*.swp
+*.tmp
+
+scripts

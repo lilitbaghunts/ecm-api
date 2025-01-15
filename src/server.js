@@ -1,9 +1,9 @@
 const app = require('./app');
 const connectDB = require('./config/db');
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.APP_PORT || 3000;
 
-connectDB(process.env.MONGO_URI);
+connectDB();
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
