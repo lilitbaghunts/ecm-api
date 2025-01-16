@@ -61,19 +61,19 @@ npm test
 
 ### Auth
 
-POST /api/auth/register - Register a new user. 
-POST /api/auth/login - Authenticate and get a JWT.
+- POST /api/auth/register - Register a new user. 
+- POST /api/auth/login - Authenticate and get a JWT.
 
 ### Products
 
-GET /api/products/ - List all products. (Cached) 
-POST /api/products/ - Create a product. (Admin & Auth required) 
-GET /api/products/:id - Get product by ID. 
-PUT /api/products/:id - Update a product. (Admin & Auth required) 
-DELETE /api/products/:id - Delete a product. (Admin & Auth required)
+- GET /api/products/ - List all products. (Cached) 
+- POST /api/products/ - Create a product. (Admin & Auth required) 
+- GET /api/products/:id - Get product by ID. 
+- PUT /api/products/:id - Update a product. (Admin & Auth required) 
+- DELETE /api/products/:id - Delete a product. (Admin & Auth required)
 
 ### Orders
 
-POST /api/orders/ - Create an order. (Auth required) 
-GET /api/orders/ - Get all orders for the user. (Auth required) 
-GET /api/orders/:id - Get order by ID. (Auth required)
+- POST /api/orders/ - Create an order. (Auth required) 
+- GET /api/orders/ - Get all orders for the user. (Auth required) 
+- GET /api/orders/:id - Get order by ID. (Auth required)
