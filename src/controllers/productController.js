@@ -89,7 +89,7 @@ const updateProduct = async (req, res, next) => {
     });
     if (!product) return res.status(404).json({ message: 'Product not found' });
 
-    res.status(200).json(product);
+    res.status(200).json({ message: 'Product successfully updated.' });
   } catch (error) {
     console.error(error);
     next(error);
@@ -101,7 +101,7 @@ const deleteProduct = async (req, res, next) => {
     const product = await Product.findByIdAndDelete(req.params.id);
     if (!product) return res.status(404).json({ message: 'Product not found' });
 
-    res.status(200).json({ message: 'Product deleted' });
+    res.status(200).json({ message: 'Product successfully deleted.' });
   } catch (error) {
     console.error(error);
     next(error);

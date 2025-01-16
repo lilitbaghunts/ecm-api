@@ -12,12 +12,12 @@ require('dotenv').config({ path: envFile });
 
 const app = express();
 
-// Setup Swagger
-setupSwagger(app);
-
 // Global middleware
 app.use(cors());
 app.use(express.json());
+
+// Setup Swagger
+setupSwagger(app);
 
 // Rate limiter middleware
 app.use('/api', apiLimiter);

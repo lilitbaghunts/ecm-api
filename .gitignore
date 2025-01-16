@@ -27,7 +27,6 @@ Thumbs.db
 
 # Test coverage
 coverage/
-__tests__
 
 # Temporary files
 *.swp
