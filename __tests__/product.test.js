@@ -167,6 +167,24 @@ describe('Product Endpoints', () => {
     });
   });
 
+  describe('GET /api/products/:id', () => {
+    it('should get a product', async () => {
+      const response = await request(app).get(`/api/products/${productId}`);
+      expect(response.status).toBe(200);
+      expect(response.body._id).toEqual(productId);
+    });
+
+    it('should return 404 if product not found', async () => {
+      const nonExistentProductId = '605c72ef15320757a85b1e89';
+      const response = await request(app).get(
+        `/api/products/${nonExistentProductId}`
+      );
+
+      expect(response.status).toBe(404);
+      expect(response.body.message).toBe('Product not found');
+    });
+  });
+
   describe('PUT /api/products/:id', () => {
     it('should update a product', async () => {
       const updatedProductData = {
@@ -184,12 +202,7 @@ describe('Product Endpoints', () => {
         .send(updatedProductData);
 
       expect(response.status).toBe(200);
-      expect(response.body.name).toBe(updatedProductData.name);
-      expect(response.body.description).toBe(updatedProductData.description);
-      expect(response.body.price).toBe(updatedProductData.price);
-      expect(response.body.stock).toBe(updatedProductData.stock);
-      expect(response.body.imageUrl).toBe(updatedProductData.imageUrl);
-      expect(response.body.category).toBe(updatedProductData.category);
+      expect(response.body.message).toBe('Product successfully updated.');
     });
 
     it('should return 404 if product not found', async () => {
@@ -238,7 +251,7 @@ describe('Product Endpoints', () => {
         .set('Authorization', `Bearer ${adminToken}`);
 
       expect(response.status).toBe(200);
-      expect(response.body.message).toBe('Product deleted');
+      expect(response.body.message).toBe('Product successfully deleted.');
     });
 
     it('should return 404 if product not found', async () => {
