@@ -3,6 +3,8 @@
  * /api/products:
  *   get:
  *     summary: Get list of products
+ *     tags:
+ *       - Products
  *     description: Retrieve a list of products with optional filters and pagination.
  *     parameters:
  *       - in: query
@@ -72,6 +74,8 @@
  * /api/products:
  *   post:
  *     summary: Create a new product.
+ *     tags:
+ *       - Products
  *     description: Admin-only route to create a new product.
  *     security:
  *       - BearerAuth: []
@@ -110,6 +114,8 @@
  * /api/products/{id}:
  *   get:
  *     summary: Get product details by ID.
+ *     tags:
+ *       - Products
  *     description: Retrieve detailed information about a specific product using its ID.
  *     parameters:
  *       - in: path
@@ -151,6 +157,8 @@
  * /api/products/{id}:
  *   put:
  *     summary: Update an existing product
+ *     tags:
+ *       - Products
  *     description: Update the details of a product. Admin access required.
  *     security:
  *       - BearerAuth: []
@@ -197,7 +205,11 @@
  * /api/products/{id}:
  *   delete:
  *     summary: Delete a product by ID.
+ *     tags:
+ *       - Products
  *     description: Deletes the product specified by the ID from the database.
+ *     security:
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id

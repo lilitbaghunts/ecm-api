@@ -3,6 +3,8 @@
  * /api/auth/register:
  *   post:
  *     summary: Register a new user.
+ *     tags:
+ *       - Auth
  *     description: Register a new user and receive a JWT token.
  *     requestBody:
  *       required: true
@@ -36,6 +38,8 @@
  * /api/auth/login:
  *   post:
  *     summary: Login with credentials and get a JWT token.
+ *     tags:
+ *       - Auth
  *     description: Login with email and password and receive a JWT token.
  *     requestBody:
  *       required: true
