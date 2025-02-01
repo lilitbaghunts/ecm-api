@@ -9,10 +9,10 @@ This project is a RESTful API for managing an e-commerce platform. It provides s
 - **MongoDB** - NoSQL database for storing data
 - **Redis** - In-memory cache for product search results
 - **JWT (JSON Web Tokens)** - Used for user authentication and authorization
-- **bcryptjs** - Used for hashing passwords
 - **Jest** - Testing framework
 - **Docker** - Containerization for easy deployment
 - **Rate Limiter** - To prevent abuse of API endpoints
+- **Swagger** - API documentation and testing tool
 
 ## Setup and Installation
 
