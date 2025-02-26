@@ -18,7 +18,6 @@ logs
 # Test files and coverage
 tests
 coverage
-__tests__
 
 # Docker-specific
 Dockerfile

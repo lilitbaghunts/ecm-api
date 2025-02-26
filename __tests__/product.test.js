@@ -3,6 +3,7 @@ const app = require('../src/app');
 const Product = require('../src/models/Product');
 const User = require('../src/models/User');
 const jwt = require('jsonwebtoken');
+const { errors, success } = require('../src/common/messages');
 
 const products = [
   {
@@ -125,7 +126,7 @@ describe('Product Endpoints', () => {
         .send(productData);
 
       expect(response.status).toBe(400);
-      expect(response.body.message).toBe('Product name is required.');
+      expect(response.body.message).toBe(errors.PRODUCT_NAME_REQUIRED);
     });
 
     it('should return 400 if product price is missing', async () => {
@@ -139,7 +140,7 @@ describe('Product Endpoints', () => {
         .send(productData);
 
       expect(response.status).toBe(400);
-      expect(response.body.message).toBe('Product price is required.');
+      expect(response.body.message).toBe(errors.PRODUCT_PRICE_REQUIRED);
     });
 
     it('should return 401 if no token is provided', async () => {
@@ -149,7 +150,7 @@ describe('Product Endpoints', () => {
         .send(productData);
 
       expect(response.status).toBe(401);
-      expect(response.body.message).toBe('Access denied');
+      expect(response.body.message).toBe(errors.ACCESS_DENIED);
     });
 
     it('should reject a non-admin user from creating a product', async () => {
@@ -163,7 +164,7 @@ describe('Product Endpoints', () => {
         .send(productData);
 
       expect(response.status).toBe(403);
-      expect(response.body.message).toBe('Access denied, admin only');
+      expect(response.body.message).toBe(errors.ADMIN_ONLY);
     });
   });
 
@@ -181,7 +182,7 @@ describe('Product Endpoints', () => {
       );
 
       expect(response.status).toBe(404);
-      expect(response.body.message).toBe('Product not found');
+      expect(response.body.message).toBe(errors.PRODUCT_NOT_FOUND);
     });
   });
 
@@ -202,7 +203,7 @@ describe('Product Endpoints', () => {
         .send(updatedProductData);
 
       expect(response.status).toBe(200);
-      expect(response.body.message).toBe('Product successfully updated.');
+      expect(response.body.message).toBe(success.PRODUCT_UPDATED);
     });
 
     it('should return 404 if product not found', async () => {
@@ -216,7 +217,7 @@ describe('Product Endpoints', () => {
         });
 
       expect(response.status).toBe(404);
-      expect(response.body.message).toBe('Product not found');
+      expect(response.body.message).toBe(errors.PRODUCT_NOT_FOUND);
     });
 
     it('should return 401 if no token is provided', async () => {
@@ -226,7 +227,7 @@ describe('Product Endpoints', () => {
         .send(productData);
 
       expect(response.status).toBe(401);
-      expect(response.body.message).toBe('Access denied');
+      expect(response.body.message).toBe(errors.ACCESS_DENIED);
     });
 
     it('should reject a non-admin user from updating a product', async () => {
@@ -240,7 +241,7 @@ describe('Product Endpoints', () => {
         .send(productData);
 
       expect(response.status).toBe(403);
-      expect(response.body.message).toBe('Access denied, admin only');
+      expect(response.body.message).toBe(errors.ADMIN_ONLY);
     });
   });
 
@@ -251,7 +252,7 @@ describe('Product Endpoints', () => {
         .set('Authorization', `Bearer ${adminToken}`);
 
       expect(response.status).toBe(200);
-      expect(response.body.message).toBe('Product successfully deleted.');
+      expect(response.body.message).toBe(success.PRODUCT_DELETED);
     });
 
     it('should return 404 if product not found', async () => {
@@ -261,7 +262,7 @@ describe('Product Endpoints', () => {
         .set('Authorization', `Bearer ${adminToken}`);
 
       expect(response.status).toBe(404);
-      expect(response.body.message).toBe('Product not found');
+      expect(response.body.message).toBe(errors.PRODUCT_NOT_FOUND);
     });
 
     it('should return 401 if no token is provided', async () => {
@@ -270,7 +271,7 @@ describe('Product Endpoints', () => {
         .send();
 
       expect(response.status).toBe(401);
-      expect(response.body.message).toBe('Access denied');
+      expect(response.body.message).toBe(errors.ACCESS_DENIED);
     });
 
     it('should reject a non-admin user from deleting a product', async () => {
@@ -279,7 +280,7 @@ describe('Product Endpoints', () => {
         .set('Authorization', `Bearer ${userToken}`);
 
       expect(response.status).toBe(403);
-      expect(response.body.message).toBe('Access denied, admin only');
+      expect(response.body.message).toBe(errors.ADMIN_ONLY);
     });
   });
 });

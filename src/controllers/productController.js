@@ -1,5 +1,6 @@
 const Product = require('../models/Product');
 const redisClient = require('../config/redis');
+const { errors } = require('../common/messages');
 
 const getAllProducts = async (req, res, next) => {
   try {
@@ -54,10 +55,10 @@ const createProduct = async (req, res, next) => {
   try {
     const { name, price } = req.body;
     if (!name) {
-      return res.status(400).json({ message: 'Product name is required.' });
+      return res.status(400).json({ message: errors.PRODUCT_NAME_REQUIRED });
     }
     if (!price) {
-      return res.status(400).json({ message: 'Product price is required.' });
+      return res.status(400).json({ message: errors.PRODUCT_PRICE_REQUIRED });
     }
     const product = new Product(req.body);
     await product.save();
@@ -71,7 +72,8 @@ const createProduct = async (req, res, next) => {
 const getProductById = async (req, res, next) => {
   try {
     const product = await Product.findById(req.params.id);
-    if (!product) return res.status(404).json({ message: 'Product not found' });
+    if (!product)
+      return res.status(404).json({ message: errors.PRODUCT_NOT_FOUND });
     res.status(200).json(product);
   } catch (error) {
     console.error(error);
@@ -87,7 +89,8 @@ const updateProduct = async (req, res, next) => {
     const product = await Product.findByIdAndUpdate(id, updateData, {
       new: true
     });
-    if (!product) return res.status(404).json({ message: 'Product not found' });
+    if (!product)
+      return res.status(404).json({ message: errors.PRODUCT_NOT_FOUND });
 
     res.status(200).json({ message: 'Product successfully updated.' });
   } catch (error) {
@@ -99,7 +102,8 @@ const updateProduct = async (req, res, next) => {
 const deleteProduct = async (req, res, next) => {
   try {
     const product = await Product.findByIdAndDelete(req.params.id);
-    if (!product) return res.status(404).json({ message: 'Product not found' });
+    if (!product)
+      return res.status(404).json({ message: errors.PRODUCT_NOT_FOUND });
 
     res.status(200).json({ message: 'Product successfully deleted.' });
   } catch (error) {
